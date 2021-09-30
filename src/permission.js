@@ -17,7 +17,7 @@ router.beforeEach(async(to, from, next) => {
   document.title = getPageTitle(to.meta.title)
   // 确定用户是否已登录
   const hasToken = getToken()
-  console.log('唯一凭证[token/id]   ', hasToken ? 'True' : 'False') // for debug 可删除！！！！！！
+  // console.log('唯一凭证[token/id]   ', hasToken ? 'True' : 'False') // for debug 可删除！！！！！！
 
   if (hasToken) {
     if (to.path === '/login') {
@@ -37,10 +37,10 @@ router.beforeEach(async(to, from, next) => {
           await store.dispatch('user/getInfo') // 获取用户信息，且存储到store中
 
           const roles = store.getters.roles // ------对应store/modules/user.js、根据登录的账号设置权限
-          console.log(roles);
+          // console.log(roles);
           // generate accessible routes map based on roles
           const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
-          console.log('当前账号的权限页面(非公共页面)', accessRoutes) // for debug 可删除！！！！！！
+          // console.log('当前账号的权限页面(非公共页面)', accessRoutes) // for debug 可删除！！！！！！
 
           // dynamically add accessible routes
           router.addRoutes(accessRoutes)

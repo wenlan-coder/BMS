@@ -21,11 +21,12 @@
               首页
             </el-dropdown-item>
           </router-link>
-          <a target="_blank" href="https://github.com/JerrybroDu?tab=repositories">
-            <el-dropdown-item>Github</el-dropdown-item>
-          </a>
-
-          <a target="_blank" href="https://github.com/JerrybroDu/jerrybro-vue-admin-element-template">
+          <router-link to="/profile">
+            <el-dropdown-item>
+              个人中心
+            </el-dropdown-item>
+          </router-link>
+          <a target="_blank" href="https://github.com/wenlan-coder/BMS">
             <el-dropdown-item>项目地址</el-dropdown-item>
           </a>
           <el-dropdown-item divided @click.native="logout">
@@ -38,7 +39,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 import Screenfull from '@/components/Screenfull'

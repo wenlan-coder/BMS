@@ -7,6 +7,7 @@ const getDefaultState = () => {
     token: getToken(),
     name: '',
     avatar: '',
+    uid:'',
     roles:[],   //用户权限
   }
 }
@@ -28,8 +29,19 @@ const mutations = {
   },
   SET_ROLES:(state,roles)=>{
     state.roles= roles
-
-  }
+  },
+  SET_ID:(state,_id)=>{
+    state.uid = _id;
+  },
+  SET_EMAIL:(state,email)=>{
+    state.email = email;
+  },
+  SET_PHONE:(state,phone)=>{
+    state.phone = phone;
+  },
+  SET_INTRO:(state,intro)=>{
+    state.intro = intro;
+  },
 }
 
 const actions = {
@@ -53,21 +65,31 @@ const actions = {
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
       getInfo(state.token).then(response => {
-        console.log("getinfo获取数据",response);
+        // console.log("getinfo获取数据",response);
         const { data } = response
         if (!data) {
           return reject('验证失败，请重新登录')
         }
-        const { username, avatar,roles} = data
-        console.log('用户信息',data);
+        const { username, avatar,roles,_id,email,phone,intro,password} = data
+        // console.log('用户信息',data);
         //根据登录账号设置权限
-        console.log(roles);
+        // console.log(roles);
         commit('SET_ROLES',roles)
         commit('SET_NAME', username)
+        commit('SET_ID',_id)
+        commit('SET_EMAIL',email)
+        commit('SET_PHONE',phone)
+        commit('SET_INTRO',intro)
+        console.log("用户id",_id);
+        Message.success("登录成功")
         //头像先写死
-        commit('SET_AVATAR', "http://wenlan-blog.test.upcdn.net/BMS/src%3Dhttp___i0.hdslb.com_bfs_article_fc0a5dc88d37aaceab3135720fc4213317495393.jpg%26refer%3Dhttp___i0.hdslb.jpg")
+        if(avatar){
+          commit('SET_AVATAR',avatar)
+        }
+        else{
+        commit('SET_AVATAR', "http://wenlan-bms.oss-cn-zhangjiakou.aliyuncs.com/e86d76361f12063c2ed723ce5cb9f3f0.jpg")
+        }
         resolve(data)
-
       }).catch(error => {
         reject(error)
       })

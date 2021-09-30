@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-backtop bottom="100">
+    <el-backtop :bottom=100>
       <div
         style="
            {
@@ -14,21 +14,22 @@
           }
         "
       >
-        T
+        ^-^
       </div>
     </el-backtop>
       <el-row>
-        <search-bar></search-bar>
+        <search-bar @onSearch = "searchResult" ref="searchBar"></search-bar>
       </el-row>
       <el-row class="category">
-        <category></category>
+        <category @indexSelect="listByCategory" ref="category"></category>
       </el-row>
-        <books></books>
+        <books class="books-area" ref="booksArea"></books>
 
   </div>
 </template>
 
 <script>
+import {selectCategory,searchBooks} from '@/api/books'
 import SearchBar from "@/components/library/SearchBar.vue";
 import Category from '@/components/library/Category.vue';
 import Books from '@/components/library/Books.vue';
@@ -39,9 +40,46 @@ export default {
     Category,
     Books,
   },
+  data(){
+    return{
+      bottom:100,
+
+    }
+  },
+  methods:{
+        //处理搜索请求
+    searchResult(){
+      console.log(this.$refs.searchBar.keywords);
+      if(!this.$refs.searchBar.keywords) this.$refs.loadBooks()
+      searchBooks({"keyword":this.$refs.searchBar.keywords}).then((res)=>{
+        if(res.code===200){
+          this.$refs.booksArea.books = res.data
+        }
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
+    listByCategory(index){
+      console.log("父组件里面",index);
+      selectCategory({key:index}).then((res)=>{
+        if(res.code === 200){
+          this.$refs.booksArea.books = res.data
+        }
+        // console.log(res);
+      }).catch((err)=>{
+        console.log(err);
+      })
+      
+      
+    }
+  }
 };
 </script>
 <style scoped>
+.books-area {
+    margin-left: auto;
+    margin-right: auto;
+}
 .el-header,
 .el-footer {
   /* background-color: #B3C0D1; */

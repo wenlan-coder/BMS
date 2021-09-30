@@ -4,8 +4,8 @@
       <el-col class="books-item">
          <el-tooltip effect="light"
                   placement="right"
-                  v-for="item in books"
-                  :key="item.id"
+                  v-for="item in books.slice((currentPage-1)*pagesize,currentPage*pagesize)"
+                  :key="item._id"
                   :open-delay="500">
         <p slot="content" style="font-size: 14px;margin-bottom: 6px;">{{item.title}}</p>
         <p slot="content" style="font-size: 13px;margin-bottom: 6px">
@@ -14,7 +14,7 @@
           <span>{{item.press}}</span>
         </p>
         <p slot="content">ISBN:{{item.ISBN}}</p>
-        <p slot="content" style="width: 300px" class="abstract">{{item.about}}</p>
+        <p slot="content" style="width: 300px" class="abstract">简介：{{item.about}}</p>
         <el-card class="card"
                  :body-style="{padding: '10px'}"
                  shadow="hover">
@@ -41,18 +41,27 @@
       </el-row>
     <el-row>
       <el-pagination
-        class="more"
-        background
-        @current-change="handleCurrentChange"
-        :current-page="currentPage"
-        :page-size="pagesize"
-        :total="books.length">
-      </el-pagination>
+          style="margin-top: 15px"
+          class="more"
+          background
+          :page-sizes="[5, 10, 15, 20]"
+          @current-change="handleCurrentChange"
+          @size-change="handleSizeChange"
+          :current-page="currentPage"
+          layout="total, sizes, prev, pager, next, jumper"
+          :page-size="pagesize"    
+          :total="books.length"
+        >
+        </el-pagination>
     </el-row>
   </div>
 </template>
 
 <script>
+import {getBooksList} from '@/api/books'
+import {borrowBooks} from '@/api/borrow'
+import {parseTime} from '@/utils/index'
+import store from '@/store'
   /* eslint-disable */
 
   export default {
@@ -61,164 +70,79 @@
       return {
         disabled: false,
         values: true,
-        books: [
-          {
-            id:1,
-            cover:"https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
-            title:"程序设计c语言",
-            author:"[中]温岚",
-            date:'1990/2/22',
-            press:"中央广电总局",
-            about:"★ 0世纪伟大而影响深远的恐怖小说体★ 邀请克苏鲁信徒级译者翻译，专有名词规范准确，行文精美流畅★ 内文加入报纸、书信、传真、速写、笔记……丰富克苏鲁元素，强大代入感★ 前三本有的这本有，前三本没有的这本也有★ 包含《星之彩》《门阶上的东西》等名篇的十一个中短篇故事，老少咸宜（雾）★ 斯蒂芬·金、尼尔·盖曼、伊藤润二、虚渊玄……全都热爱克苏鲁★ 《魔兽世界》《异形》《星际争霸》《蝙蝠侠》《FateZero》《加勒比海盗》《辐射》《沙耶之歌》《血源诅咒》《DotA》《林中小屋》《钢之炼金术士》《炉石传说》《潜行吧！奈亚子》……全体排队向克苏鲁致敬《克苏鲁神话 IV》收录篇目",
-            ISBN:9787505752115,
-          },
-           {
-            id:1,
-            cover:"https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
-            title:"程序设计c语言",
-            author:"[中]温岚",
-            date:'1990/2/22',
-            press:"中央广电总局",
-            about:"★ 0世纪伟大而影响深远的恐怖小说体★ 邀请克苏鲁信徒级译者翻译，专有名词规范准确，行文精美流畅★ 内文加入报纸、书信、传真、速写、笔记……丰富克苏鲁元素，强大代入感★ 前三本有的这本有，前三本没有的这本也有★ 包含《星之彩》《门阶上的东西》等名篇的十一个中短篇故事，老少咸宜（雾）★ 斯蒂芬·金、尼尔·盖曼、伊藤润二、虚渊玄……全都热爱克苏鲁★ 《魔兽世界》《异形》《星际争霸》《蝙蝠侠》《FateZero》《加勒比海盗》《辐射》《沙耶之歌》《血源诅咒》《DotA》《林中小屋》《钢之炼金术士》《炉石传说》《潜行吧！奈亚子》……全体排队向克苏鲁致敬《克苏鲁神话 IV》收录篇目",
-            ISBN:9787505752115, 
-          },
-                     {
-            id:1,
-            cover:"https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
-            title:"程序设计c语言",
-            author:"[中]温岚",
-            date:'1990/2/22',
-            press:"中央广电总局",
-            about:"★ 0世纪伟大而影响深远的恐怖小说体★ 邀请克苏鲁信徒级译者翻译，专有名词规范准确，行文精美流畅★ 内文加入报纸、书信、传真、速写、笔记……丰富克苏鲁元素，强大代入感★ 前三本有的这本有，前三本没有的这本也有★ 包含《星之彩》《门阶上的东西》等名篇的十一个中短篇故事，老少咸宜（雾）★ 斯蒂芬·金、尼尔·盖曼、伊藤润二、虚渊玄……全都热爱克苏鲁★ 《魔兽世界》《异形》《星际争霸》《蝙蝠侠》《FateZero》《加勒比海盗》《辐射》《沙耶之歌》《血源诅咒》《DotA》《林中小屋》《钢之炼金术士》《炉石传说》《潜行吧！奈亚子》……全体排队向克苏鲁致敬《克苏鲁神话 IV》收录篇目",
-            ISBN:9787505752115, 
-          },
-            {
-            id:1,
-            cover:"https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
-            title:"程序设计c语言",
-            author:"[中]温岚",
-            date:'1990/2/22',
-            press:"中央广电总局",
-            about:"★ 0世纪伟大而影响深远的恐怖小说体★ 邀请克苏鲁信徒级译者翻译，专有名词规范准确，行文精美流畅★ 内文加入报纸、书信、传真、速写、笔记……丰富克苏鲁元素，强大代入感★ 前三本有的这本有，前三本没有的这本也有★ 包含《星之彩》《门阶上的东西》等名篇的十一个中短篇故事，老少咸宜（雾）★ 斯蒂芬·金、尼尔·盖曼、伊藤润二、虚渊玄……全都热爱克苏鲁★ 《魔兽世界》《异形》《星际争霸》《蝙蝠侠》《FateZero》《加勒比海盗》《辐射》《沙耶之歌》《血源诅咒》《DotA》《林中小屋》《钢之炼金术士》《炉石传说》《潜行吧！奈亚子》……全体排队向克苏鲁致敬《克苏鲁神话 IV》收录篇目",
-            ISBN:9787505752115, 
-          },
-            {
-            id:1,
-            cover:"https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
-            title:"程序设计c语言",
-            author:"[中]温岚",
-            date:'1990/2/22',
-            press:"中央广电总局",
-            about:"★ 0世纪伟大而影响深远的恐怖小说体★ 邀请克苏鲁信徒级译者翻译，专有名词规范准确，行文精美流畅★ 内文加入报纸、书信、传真、速写、笔记……丰富克苏鲁元素，强大代入感★ 前三本有的这本有，前三本没有的这本也有★ 包含《星之彩》《门阶上的东西》等名篇的十一个中短篇故事，老少咸宜（雾）★ 斯蒂芬·金、尼尔·盖曼、伊藤润二、虚渊玄……全都热爱克苏鲁★ 《魔兽世界》《异形》《星际争霸》《蝙蝠侠》《FateZero》《加勒比海盗》《辐射》《沙耶之歌》《血源诅咒》《DotA》《林中小屋》《钢之炼金术士》《炉石传说》《潜行吧！奈亚子》……全体排队向克苏鲁致敬《克苏鲁神话 IV》收录篇目",
-            ISBN:9787505752115, 
-          },
-           {
-            id:1,
-            cover:"https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
-            title:"程序设计c语言",
-            author:"[中]温岚",
-            date:'1990/2/22',
-            press:"中央广电总局",
-            about:"★ 0世纪伟大而影响深远的恐怖小说体★ 邀请克苏鲁信徒级译者翻译，专有名词规范准确，行文精美流畅★ 内文加入报纸、书信、传真、速写、笔记……丰富克苏鲁元素，强大代入感★ 前三本有的这本有，前三本没有的这本也有★ 包含《星之彩》《门阶上的东西》等名篇的十一个中短篇故事，老少咸宜（雾）★ 斯蒂芬·金、尼尔·盖曼、伊藤润二、虚渊玄……全都热爱克苏鲁★ 《魔兽世界》《异形》《星际争霸》《蝙蝠侠》《FateZero》《加勒比海盗》《辐射》《沙耶之歌》《血源诅咒》《DotA》《林中小屋》《钢之炼金术士》《炉石传说》《潜行吧！奈亚子》……全体排队向克苏鲁致敬《克苏鲁神话 IV》收录篇目",
-            ISBN:9787505752115, 
-          }
-        ],
+        books: [],
         currentPage: 1,
-        pagesize: 8,
+        pagesize: 10,
+        limit_day:30,  // 默认限制天数为30天
+        limt_timestamp:'',  // 限制天数转换为时间戳
         borrowed: {
-          uid: this.$store.state.id,
-          bid: 0,
-          time:''
+          uid: this.$store.getters.uid,   // 用户id
+          title:'',
+          uname:this.$store.getters.name,
+          bid:'',   // 借阅书籍id
+          borrow_time:'',   // 借阅时间
+          should_return_time:'',
+          real_return_time:'',
+          borrow_state:1,  //是否归还 1 为未还 默认值
+          late_state:0,  //是否逾期 0 为没有
+          late_day:0,
         }
       }
     },
-    mounted: function () {
-      this.warnings()
-      this.loadBooks()    //挂在请求图书
+    mounted() {
+      this.loadBooks()    //请求图书
     },
     methods: {
-      warnings () {
-        var sUserAgent = navigator.userAgent.toLowerCase();
-        var bIsIpad = sUserAgent.match(/ipad/i) == "ipad";
-        var bIsIphoneOs = sUserAgent.match(/iphone os/i) == "iphone os";
-        var bIsMidp = sUserAgent.match(/midp/i) == "midp";
-        var bIsUc7 = sUserAgent.match(/rv:1.2.3.4/i) == "rv:1.2.3.4";
-        var bIsUc = sUserAgent.match(/ucweb/i) == "ucweb";
-        var bIsAndroid = sUserAgent.match(/android/i) == "android";
-        var bIsCE = sUserAgent.match(/windows ce/i) == "windows ce";
-        var bIsWM = sUserAgent.match(/windows mobile/i) == "windows mobile";
-        if (bIsIpad || bIsIphoneOs || bIsMidp || bIsUc7 || bIsUc || bIsAndroid || bIsCE || bIsWM) {
-          this.$message.warning("移动端体验不好，请用电脑浏览器打开1~")
-        }
-      },
       borrow (item) {
-        if (this.$store.state.id === '') {
-          console.log("未登录，不能借阅！");
-          this.$router.push('/login')
-        }
-        else{
-          const title = item.title;
-          this.borrowed.bid = item.id
-          const borrowTime = new Date();
-          const year = borrowTime.getFullYear();
-          const month = borrowTime.getMonth()+1;
-          const day = borrowTime.getDate();
-          const hour = borrowTime.getHours();
-          const minute = borrowTime.getMinutes();
-          const seconds = borrowTime.getSeconds();
-          this.borrowed.time = `${year}年${month}月${day}日  ${hour}:${minute}:${seconds}`
-          const _this = this
-          this.$axios.post('/borrow',this.borrowed).then( resp =>{
-            if(resp && resp.data.code === 200) {
+        // console.log(item);
+        this.borrowed.bid = item._id;
+        this.borrowed.title = item.title;
+        const time = new Date();
+        const borrowTime = parseTime(time);  // 借出时间
+        let should_return__timestamp  = time.getTime()+this.limt_timestamp;  //应还时间戳
+        this.borrowed.should_return_time = parseTime(should_return__timestamp)
+        this.borrowed.borrow_time = borrowTime;
+        this.borrowed.title = item.title;
+        console.log(this.borrowed);
+        borrowBooks(this.borrowed).then((res)=>{
+           if(res.code  === 200 ){
               this.$notify.success({
                 title:"成功！",
-                message: `你成功借阅《${title}》！`
+                message: `你成功借阅${this.borrowed.title}！`
               })
+           }
+        })
+        },
+      
+      
+      //默认加载图书
+      loadBooks() {
+      getBooksList().then((res) => {
+        this.books = res.data;
+        // console.log(this.books);
+      });
+    },
+     //加载页数
+       async fetchLimitDay(){
+         const res =  await getLimitDay();
+         const limit = res.data[0];
+         this.limit_day = limit.limit_day
+         console.log("借阅天数限制",this.limit_day);
+         this.limt_timestamp = 86400000*this.limit_day;
+         console.log(this.limt_timestamp);
 
-            }
-            else if(resp.data.code ===400) {
-              var indexs = this.books.findIndex(item =>{
-                if(item.id === this.borrowed.bid){
-                  return true
-                }
-              })
-              this.books.splice(indexs,1)
-              this.$notify({
-                title: '错误！',
-                message: `你已经借阅《${title}》！`,
-                type: 'error'
-              })
-            }
-          }).catch( error =>{
-            console.log(error)
-          })
-        }
       },
-      changeView (event) {
-        this.disabled = !event
+
+      // 初始页currentPage、初始每页数据数pagesize和数据data
+      handleSizeChange(size) {
+      this.pagesize = size;
+      console.log(this.pagesize)  //每页下拉显示数据
       },
-      loadBooks () {
-        var _this = this
-        this.$axios.get('/books').then(resp => {
-          if (resp && resp.data.code === 200) {
-            _this.books = resp.data.result
-          }
-        })
-      },
-      handleCurrentChange: function (currentPage) {
-        this.currentPage = currentPage
-      },
-      searchResult () {
-        var _this = this
-        this.$axios
-          .get('/search?keywords=' + this.$refs.searchBar.keywords, {
-          }).then(resp => {
-          if (resp && resp.data.code === 200) {
-            _this.books = resp.data.result
-          }
-        })
+      handleCurrentChange(currentPage){
+      this.currentPage = currentPage;
+      console.log(this.currentPage)  //点击第几页
       }
-    }
+    },
   }
 </script>
 <style scoped>
@@ -226,9 +150,8 @@
     width: 200px;
     height: 350px;
     float: left;
-    margin:5px 15px 20px 5px;
-  }
-
+    margin:20px
+  } 
   .cover {
     width: 180px;
     height: 250px;
@@ -250,7 +173,7 @@
 
   .author {
     color: #333;
-    width: 102px;
+    width: 100%;
     font-size: 11px;
     margin-bottom: 8px;
     text-align: left;

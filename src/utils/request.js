@@ -52,16 +52,32 @@ service.interceptors.response.use(
     if (res.code !== 200) {
       Message({
         message: res.message || 'Error',
-        type: 'error',
+        type: res.type,
         duration: 5 * 1000
       })
-    if(res.code===412){
-        // Message({
-        //   message: res.message,
-        //   type:res.type,
-        //   duration: 1 * 1000
-        // })
+
+      if(res.code === 401) {
+        MessageBox.confirm('你的账户存在异常，已被禁用，请与管理员联系', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
       }
+      
+      //修改密码
+      if(res.code === 50018 ){
+        MessageBox.confirm('你已修改密码成功，请重新登录', '提示', {
+          confirmButtonText: '重新登录',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          store.dispatch('user/resetToken').then(() => {
+            location.reload()
+          })
+        })
+      }
+    
+
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
       if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
         // to re-login
@@ -76,8 +92,9 @@ service.interceptors.response.use(
         })
       }
       return Promise.reject(new Error(res.message || 'Error'))
-    } else {
-      return res
+    } 
+    else {
+      return res;
     }
   },
   error => {

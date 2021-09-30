@@ -6,30 +6,6 @@ Vue.use(Router)
 /* Layout */
 import Layout from '@/layout'
 
-/**
- * Note: sub-menu only appear when route children.length >= 1
- * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
- *
- * hidden: true                   if set true, item will not show in the sidebar(default is false)
- * alwaysShow: true               if set true, will always show the root menu
- *                                if not set alwaysShow, when item has more than one children route,
- *                                it will becomes nested mode, otherwise not show the root menu
- * redirect: noRedirect           if set noRedirect will no redirect in the breadcrumb
- * name:'router-name'             the name is used by <keep-alive> (must set!!!)
- * meta : {
-    roles: ['admin','editor']    control the page roles (you can set multiple roles)
-    title: 'title'               the name show in sidebar and breadcrumb (recommend set)
-    icon: 'svg-name'/'el-icon-x' the icon show in the sidebar
-    breadcrumb: false            if set false, the item will hidden in breadcrumb(default is true)
-    activeMenu: '/example/list'  if set path, the sidebar will highlight the path you set
-  }
- */
-
-/**
- * constantRoutes
- * a base page that does not have permission requirements
- * all roles can be accessed
- */
 //公共页面
 export const constantRoutes = [
   {
@@ -41,6 +17,20 @@ export const constantRoutes = [
     path: '/auth-redirect',
     component: () => import('@/views/login/auth-redirect'),
     hidden: true
+  },
+  {
+    path: '/profile',
+    component: Layout,
+    redirect: '/profile/index',
+    hidden: true,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/profile/index'),
+        name: 'Profile',
+        meta: { title: '个人中心', icon: 'user', noCache: true }
+      }
+    ]
   },
   {
     path: '/404',
@@ -59,6 +49,7 @@ export const constantRoutes = [
     }]
   },
 ]
+//权限页面
 export const asyncRoutes = [
 {
   path: '/library',
@@ -140,22 +131,39 @@ export const asyncRoutes = [
   ]
 },
 {
+  path: '/Notice',
+  component: Layout,
+  redirect: '/Notice/noticeMangement',
+  name: 'Notice',
+  meta: { title: '公告管理', icon: 'el-icon-reading',roles:['admin'] },
+  children: [
+    {
+      path: 'noticeMangement',
+      name: 'noticeMangement',
+      component: () => import('@/views/Notice/notice'),
+      meta: { title: '通知发布', icon: 'table' }
+    },
+  ]
+},
+{
   path: '/SystemMangement',
   component: Layout,
   redirect: '/SystemMangement/system',
   name: 'SystemMangement',
-  meta: { title: '系统管理', icon: 'el-icon-tickets',roles:['admin'] },
+  meta: { title: '系统管理', icon: 'el-icon-setting',roles:['admin'] },
   children: [
     {
       path: 'system',
       name: 'system',
       component: () => import('@/views/SystemMangement/System'),
-      meta: { title: '数据管理', icon: 'el-icon-setting' }
+      meta: { title: '数据管理', icon: 'el-icon-cpu' }
     },
-    
-  
-
-
+    {
+      path: 'lateMangement',
+      name: 'lateMangement',
+      component: () => import('@/views/SystemMangement/LateMangement.vue'),
+      meta: { title: '到期管理', icon: 'el-icon-alarm-clock' }
+    },
   ]
 },
 // 404 page must be placed at the end !!!

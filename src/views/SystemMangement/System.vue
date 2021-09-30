@@ -1,11 +1,12 @@
 <template>
-  <div>
-      <h2>数据管理</h2>
+  <div class="app-container">
+      数据管理
   </div>
 </template>
 
 <script>
 export default {
+    name:"System"
 
 }
 </script>

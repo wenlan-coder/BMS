@@ -134,8 +134,8 @@ export default {
     }
     return {
       loginForm: {
-        username: '',
-        password: ''
+        username:'admin',
+        password:"12345"
       },
       registerForm:{
        roles:'editor',   //用户注册写死权限位为用户普通用户
@@ -153,7 +153,7 @@ export default {
       registerRules:{
       registerName:[
         { required: true, message: '用户名不为空', trigger: "blur" },
-        { min: 5, max: 12, message: '用户名由5-12位的英文字母数字下划线中文组成', trigger: "blur" }
+        { min: 2, max: 12, message: '用户名由5-12位的英文字母或数字或下划线或中文组成', trigger: "blur" }
       ],
        registerEmail:[
       { required: true, message: '请输入邮箱地址', trigger: 'blur' },
@@ -182,6 +182,10 @@ export default {
       },
       immediate: true
     }
+  },
+  mounted(){
+    this.warnings()
+
   },
   methods: {
     showPwd() {
@@ -251,8 +255,21 @@ export default {
         }
 
       })
-
-    }
+    },
+    warnings () {
+        var sUserAgent = navigator.userAgent.toLowerCase();
+        var bIsIpad = sUserAgent.match(/ipad/i) == "ipad";
+        var bIsIphoneOs = sUserAgent.match(/iphone os/i) == "iphone os";
+        var bIsMidp = sUserAgent.match(/midp/i) == "midp";
+        var bIsUc7 = sUserAgent.match(/rv:1.2.3.4/i) == "rv:1.2.3.4";
+        var bIsUc = sUserAgent.match(/ucweb/i) == "ucweb";
+        var bIsAndroid = sUserAgent.match(/android/i) == "android";
+        var bIsCE = sUserAgent.match(/windows ce/i) == "windows ce";
+        var bIsWM = sUserAgent.match(/windows mobile/i) == "windows mobile";
+        if (bIsIpad || bIsIphoneOs || bIsMidp || bIsUc7 || bIsUc || bIsAndroid || bIsCE || bIsWM) {
+          this.$message.warning("移动端体验不好，请用电脑浏览器打开1~")
+        }
+      },
   }
   
 }
