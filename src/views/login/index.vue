@@ -134,7 +134,7 @@ export default {
     }
     return {
       loginForm: {
-        username:'admin',
+        username:'test1',
         password:"12345"
       },
       registerForm:{

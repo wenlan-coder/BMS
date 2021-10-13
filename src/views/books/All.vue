@@ -60,7 +60,7 @@ export default {
       })
     },
     listByCategory(index){
-      console.log("父组件里面",index);
+      // console.log("父组件里面",index);
       selectCategory({key:index}).then((res)=>{
         if(res.code === 200){
           this.$refs.booksArea.books = res.data

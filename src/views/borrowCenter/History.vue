@@ -33,8 +33,9 @@
     :label-width="formLabelWidth" label="借出日期">
     <el-col :span="24">
       <el-date-picker
-      v-model="form.borrow_time"
+      v-model="form.borrow_time "
       type="datetime"
+      value-format="timestamp"
       placeholder="选择日期时间">
     </el-date-picker>
     </el-col>
@@ -45,6 +46,7 @@
       <el-date-picker
       v-model="form.should_return_time"
       type="datetime"
+      value-format="timestamp"
       placeholder="选择日期时间">
     </el-date-picker>
     </el-col>
@@ -55,6 +57,7 @@
       :disabled="true"
       v-model="form.real_return_time"
       type="datetime"
+      value-format="timestamp"
       placeholder="选择日期时间">
     </el-date-picker>
     </el-col>
@@ -122,21 +125,25 @@
     <el-table-column
       label="借出日期"
       prop="borrow_time"
+      :formatter ="timeFormat"
       fix>
     </el-table-column>
     <el-table-column
       label="应还日期"
       prop="should_return_time"
+      :formatter ="timeFormat"
       fix>
     </el-table-column>
     <el-table-column
       label="归还日期"
       prop="real_return_time"
+      :formatter ="timeFormat"
       fix>
     </el-table-column>
      <el-table-column
       label="逾期天数"
       prop="late_day"
+      
       fix>
     </el-table-column>
      <el-table-column prop="tag" label="是否归还" width="80">
@@ -193,6 +200,7 @@
 </template>
 
 <script>
+import { parseTime } from '@/utils/index';
 import checkPermission from '@/utils/permission' // 权限判断函数
 import {userHistory,getAllHistory,deleteHistory,editHistory} from '@/api/borrow'
   export default {
@@ -237,6 +245,17 @@ import {userHistory,getAllHistory,deleteHistory,editHistory} from '@/api/borrow'
     },
     },
     methods: {
+      //格式化时间
+      timeFormat(row,column){
+        // console.log(row,column);
+        var date = row[column.property];
+        // console.log(date);
+        if (date == undefined) {
+        return "";
+      }
+      return parseTime(date)
+    },
+
       //模糊查询
       checkData(){
         if(!this.search){
@@ -256,7 +275,7 @@ import {userHistory,getAllHistory,deleteHistory,editHistory} from '@/api/borrow'
              this.tableData = res.data;
              this.filterData = res.data;
            }
-           console.log(res);
+          //  console.log(res);
          }).catch((err)=>{
            console.log(err.message);
          })
@@ -275,7 +294,7 @@ import {userHistory,getAllHistory,deleteHistory,editHistory} from '@/api/borrow'
        },
        //对话框确定处理
         async handleHistorySubmit(){
-        //  console.log(this.form);
+         console.log(this.form);
          const res = await editHistory(this.form).catch((err)=>{console.log(err)})
         //  editHistory(this)
         if(res.code === 200){

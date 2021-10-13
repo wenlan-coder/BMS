@@ -51,7 +51,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       login({ username: username.trim(), password: password }).then(response => {
         const { token } = response
-        console.log("登录请求数据",response);  //for debuge
+        // console.log("登录请求数据",response);  //for debuge
         commit('SET_TOKEN', token)
         setToken(token)
         resolve()
@@ -80,7 +80,7 @@ const actions = {
         commit('SET_EMAIL',email)
         commit('SET_PHONE',phone)
         commit('SET_INTRO',intro)
-        console.log("用户id",_id);
+        // console.log("用户id",_id);
         Message.success("登录成功")
         //头像先写死
         if(avatar){

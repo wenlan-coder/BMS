@@ -3,7 +3,7 @@
   <el-row :gutter="20" style="margin-top:20px"> 
   <el-col  :xs="24" :lg="8">
       <div class="user-profile">
-        <el-card>
+        <el-card shadow="hover">
             <pan-thumb :image="avatar"  style="floatleft">
        <div class="role-text"> 权限:
         <span v-for="item in roles" :key="item" class="pan-info-roles">{{ item }}</span></div>
@@ -18,7 +18,7 @@
   </el-col>
   <!-- 名言警句 -->
     <el-col :lg="16" :xs="24">
-      <el-card class="verse">
+      <el-card class="verse" shadow="hover">
         <h2>你知道嘛？</h2>
         <p>{{this.verse.hitokoto}}</p>
         <span> ——{{this.verse.from}}</span>
@@ -28,7 +28,7 @@
   <el-row class="books" :gutter="20">
     <el-row :gutter="10">
 		<el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-		<el-card>
+		<el-card shadow="hover">
       	<div class="grid-content bg-purple">
 		  <div class="row">
           <div class="column">

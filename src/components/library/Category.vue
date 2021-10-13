@@ -35,7 +35,7 @@ export default {
     },
     methods:{
       handleSelect(index,inexPath){
-        console.log(index);
+        // console.log(index);
         this.$emit('indexSelect',index)
       },
       fetchCategoryList(){

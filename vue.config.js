@@ -25,8 +25,7 @@ module.exports = {
    * Detail: https://cli.vuejs.org/config/#publicpath
    */
   publicPath: '/',
-  outputDir: 'dist',
-  assetsDir: 'static',
+  outputDir: '../server/dist',
   lintOnSave: false,
   productionSourceMap: false,
   devServer: {
@@ -38,14 +37,14 @@ module.exports = {
     },
     proxy:{
       '/api': {
-        target: 'http://127.0.0.1:3000',  //代理后端接口
+        target: 'http://localhost:80',  //代理后端接口开发环境
         changeOrigin: true,
         pathRewrite: {
           '^/api' : ''       //注意加/，important
         }
       } 
     },
-    public:"192.168.96.249:9999",
+    // public:"192.168.96.249:9999",
     //  after: require('./mock/mock-server.js')
   },
   configureWebpack: {

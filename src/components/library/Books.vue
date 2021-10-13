@@ -97,10 +97,11 @@ import store from '@/store'
         // console.log(item);
         this.borrowed.bid = item._id;
         this.borrowed.title = item.title;
-        const time = new Date();
-        const borrowTime = parseTime(time);  // 借出时间
-        let should_return__timestamp  = time.getTime()+this.limt_timestamp;  //应还时间戳
-        this.borrowed.should_return_time = parseTime(should_return__timestamp)
+        const time = new Date().getTime()
+        const borrowTime = time;  // 借出时间戳
+        console.log('sds',parseTime(borrowTime));
+        let should_return__timestamp  = time + 2592000000;  //应还时间戳
+        this.borrowed.should_return_time = should_return__timestamp  //
         this.borrowed.borrow_time = borrowTime;
         this.borrowed.title = item.title;
         console.log(this.borrowed);
@@ -122,16 +123,7 @@ import store from '@/store'
         // console.log(this.books);
       });
     },
-     //加载页数
-       async fetchLimitDay(){
-         const res =  await getLimitDay();
-         const limit = res.data[0];
-         this.limit_day = limit.limit_day
-         console.log("借阅天数限制",this.limit_day);
-         this.limt_timestamp = 86400000*this.limit_day;
-         console.log(this.limt_timestamp);
-
-      },
+  
 
       // 初始页currentPage、初始每页数据数pagesize和数据data
       handleSizeChange(size) {

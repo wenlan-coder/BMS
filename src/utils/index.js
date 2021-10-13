@@ -82,12 +82,7 @@ export function formatTime(time, option) {
     )
   }
 }
-//时间格式转换为时间戳
-export function timeToStamp(strTime){
-  var timestamp2 = Date.parse(new Date(strTime));
-  timestamp2 = timestamp2 / 1000;
-  return timestamp2
-}
+
 
 /**
  * @param {string} url

@@ -67,10 +67,10 @@ export default {
   },
   data(){
     return {
-      userCount:'',
-      categoryCount:'',
-      booksCount:'',
-      lateCount:'',
+      userCount:0,
+      categoryCount:0,
+      booksCount:0,
+      lateCount:0,
     }
   },
   methods: {
@@ -79,7 +79,7 @@ export default {
     },
     async fetchCount(){
       const res = await getCount()
-      console.log(res.data);
+      // console.log(res.data);
       if(res.code === 200){
         this.userCount = res.data.userCount;
         this.booksCount = res.data.booksCount;

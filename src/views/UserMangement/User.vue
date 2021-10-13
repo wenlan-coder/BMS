@@ -196,7 +196,7 @@ export default {
        let res = await getUserList({
          uid:this.uid
        })
-       console.log('user',res);
+      //  console.log('user',res);
        this.userData = res.data;
        this.filterUserData = res.data;
     },

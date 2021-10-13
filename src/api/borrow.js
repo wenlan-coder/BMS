@@ -1,5 +1,12 @@
 import request from '@/utils/request'
-
+//延期请求接口
+export function editLimitDay(data){
+    return request({
+        url:"/borrow/editLimitDay",
+        method:"post",
+        data
+    })
+}
 
 //用户借书请求接口
 export function borrowBooks(data){
@@ -43,6 +50,14 @@ export function returnBooks(data){
         url:"/borrow/returnBooks",
         method:"post",
         data
+    })
+}
+
+//返回今天的记录
+export function getTodayHistory(){
+    return request({
+        url:"/borrow/getTodayHistory",
+        method:"get"
     })
 }
 
